@@ -5,26 +5,23 @@ def generator(text, sep=" ", option=None):
         Splits the text according to sep value and yields the substrings.
     """
 
-    if type(text) != str:
-        print("ERROR")
-        return
+    if not isinstance(text, str):
+        raise TypeError("Input text must be a string.")
+    
+    valid_options = ("ordered", "shuffle", "unique", None)
+    if option not in valid_options:
+         raise ValueError(f"Invalid option. Exected one of {valid_options}")
 
     substrings = text.split(sep)
-    new_substrs = []
-
-    nb_substrs = len(substrings)
-
-    if option == "shuffle":
-        new_substrs = [substrings.pop(random.randrange(len(substrings))) for _ in range(nb_substrs)]
+ 
+    if option == "ordered":
+        yield from sorted(substrings)
     elif option == "unique":
-        new_substrs = dict.fromkeys(substrings, None).keys()
-    elif option == "ordered":
-        new_substrs = sorted(substrings)
-    elif option == None:
-        new_substrs = substrings
+        yield from dict.fromkeys(substrings).keys()
+    elif option == "shuffle":
+        tmp = substrings.copy()
+        while tmp:
+            yield tmp.pop(random.randrange(len(tmp)))
     else:
-        raise ValueError("Unknown option")
-
-    for s in new_substrs:
-        yield s
+        yield from substrings
 
